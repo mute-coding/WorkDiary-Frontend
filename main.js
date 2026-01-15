@@ -99,12 +99,12 @@ function getYearWeekMonth(dateStr){
 
 
 
-
+const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev";
 
 //串接後端api
 async function getEmpName(){
   try {
-    const url = await fetch('http://localhost:8080/workdiary/employees/all');
+    const url = await fetch(`${API_BASE_URL}/workdiary/employees/all`);
     const data = await url.json();
     return data.map(emp => emp.empName);
   } catch (err) {
@@ -128,7 +128,7 @@ async function loadEmpName() {
 }
 loadEmpName();
 async function getEmpDept(empName) {
-  const url = new URL('http://localhost:8080/workdiary/employees/dept');
+  const url = new URL(`${API_BASE_URL}/workdiary/employees/dept`);
   url.searchParams.append('EmpName', empName);
 
   const res = await fetch(url);
@@ -154,7 +154,7 @@ empNameInput.addEventListener('change', async () => {
 
 async function getWorkItem(){
   try{
-    const url = new URL('http://localhost:8080/workdiary/workitem/all');
+    const url = new URL(`${API_BASE_URL}/workdiary/workitem/all`);
     const res = await fetch(url);
     const data = await res.json();
     console.log(data.map(data => data.workItem));
@@ -178,7 +178,7 @@ loadWorkItem();
 
 async function getProjectName(){
   try{
-    const url = new URL('http://localhost:8080/workdiary/projectname/all')
+    const url = new URL(`${API_BASE_URL}/workdiary/projectname/all`)
     const res = await fetch(url);
     const data = await res.json();
     return data.map(data => data.projectName);
@@ -284,7 +284,7 @@ insertBtn.addEventListener('click', async () => {
     const editId = insertBtn.dataset.editId; 
 
     if(editId){
-        res = await fetch(`http://localhost:8080/workdiary/update/${editId}`, {
+        res = await fetch(`${API_BASE_URL}/workdiary/update/${editId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -294,7 +294,7 @@ insertBtn.addEventListener('click', async () => {
       });
 
     }else{
-      res = await fetch('http://localhost:8080/workdiary/save', {
+      res = await fetch(`${API_BASE_URL}/workdiary/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -333,7 +333,7 @@ insertBtn.addEventListener('click', async () => {
 
 function  getWorkItems(){
 
-  const url = new URL('http://localhost:8080/workdiary/all');
+  const url = new URL(`${API_BASE_URL}/workdiary/all`);
 
   fetch(url, { method: "GET" })
     .then(response => response.json())
@@ -429,7 +429,7 @@ function workDiariesActions(json){
       
       deleteBtn.addEventListener('click',()=>{
         alert('確定要刪除嗎?');
-        fetch('http://localhost:8080/workdiary/delete/'+id,{
+        fetch(`${API_BASE_URL}/workdiary/delete/`+id,{
           method:'DELETE',
         })
         .then(res => res.text()) 
@@ -490,7 +490,7 @@ async function saveEmployee() {
     throw new Error('請填寫所有員工欄位');
   }
 
-  const res = await fetch('http://localhost:8080/workdiary/employees/create', {
+  const res = await fetch(`${API_BASE_URL}/workdiary/employees/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ empName, empId, empDept })
@@ -509,7 +509,7 @@ async function saveProject() {
     throw new Error('請輸入專案名稱');
   }
 
-  const res = await fetch('http://localhost:8080/workdiary/projectname/create', {
+  const res = await fetch(`${API_BASE_URL}/workdiary/projectname/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ projectName })
@@ -527,7 +527,7 @@ function closeModal(modalId) {
 }
 
 document.getElementById('downloadExcel').addEventListener('click',async()=>{
-  const res = await fetch('http://localhost:8080/workdiary/download',{
+  const res = await fetch(`${API_BASE_URL}/workdiary/download`,{
     method:'GET'
   });
   const blob = await res.blob();
@@ -542,7 +542,7 @@ document.getElementById('downloadExcel').addEventListener('click',async()=>{
 
 document.getElementById('sendMail').addEventListener('click',async()=>{
   try{
-    const res = await fetch('http://localhost:8080/workdiary/sendmail',{
+    const res = await fetch(`${API_BASE_URL}/workdiary/sendmail`,{
       method:'GET'
     })
     if(!res.ok){
@@ -559,7 +559,7 @@ document.getElementById('sendMail').addEventListener('click',async()=>{
 
 document.getElementById('deleteAll').addEventListener('click',async()=>{
   try{
-    const res = await fetch('http://localhost:8080/workdiary/delete',{
+    const res = await fetch(`${API_BASE_URL}/workdiary/delete`,{
       method:'DELETE'
     });
     const message = await res.text();
