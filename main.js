@@ -114,7 +114,7 @@ async function getEmpName(){
 }
 //調用員工名稱api
 
-
+/*
 async function loadEmpName() {
   const empNameList = document.getElementById('empNameList');
   const empNames = await getEmpName();
@@ -127,6 +127,23 @@ async function loadEmpName() {
   });
 }
 loadEmpName();
+*/
+async function loadEmpName() {
+  const empNameList = document.getElementById('empNameList');
+  const empNames = await getEmpName();
+
+  // 先清空舊的選項，避免重複
+  empNameList.innerHTML = '';
+
+  empNames.forEach(empName => {
+    const option = document.createElement('option');
+    option.value = empName;  
+    empNameList.appendChild(option);
+  });
+}
+
+loadEmpName();
+
 async function getEmpDept(empName) {
   const url = new URL(`${API_BASE_URL}/workdiary/employees/dept`);
   url.searchParams.append('EmpName', empName);
