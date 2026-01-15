@@ -99,7 +99,7 @@ function getYearWeekMonth(dateStr){
 
 
 
-const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev";
+const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev ";
 
 //串接後端api
 async function getEmpName(){
