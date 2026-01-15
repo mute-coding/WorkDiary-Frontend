@@ -104,7 +104,7 @@ const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev ";
 //串接後端api
 async function getEmpName(){
   try {
-    const url = await fetch(`${API_BASE_URL}/workdiary/employees/all`);
+    const url = await fetch(`https://phylis-nonpresentational-gussie.ngrok-free.dev/workdiary/employees/all`);
     const data = await url.json();
     return data.map(emp => emp.empName);
   } catch (err) {
