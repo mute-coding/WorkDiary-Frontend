@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css" >
+</head>
+
+
+<body class="justify-content-center align-items-center min-vh-100" >
+    <div id="formContainer" class="container ">
+        <div class="row gx-2 mt-3 mb-3">
+            <div class="col-auto">
+                <button id="createNewEmployeeBTN" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNewEmployeeModal">新增員工</button>
+            </div>
+            <div class="col-auto">
+                <button id="createNewProjectNameBTN" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNewProjectNameModal">新增專案名稱</button>
+            </div>
+        </div>
+ 
+        <div class="row mt-3 mb-3">
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">年份</span>
+                    <input type="text" id="yearField" class="form-control" placeholder="" aria-label="" aria-describedby="" readonly> 
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">第幾周</span>
+                    <input type="text" id="weekField" class="form-control" placeholder="" aria-label="" aria-describedby="" readonly> 
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">月份</span>
+                    <input type="text" id="monthField" class="form-control" placeholder="" aria-label="" aria-describedby="" readonly> 
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">日期</span>
+                    <!-- <input type="text" id="dateField" class="form-control" placeholder="" aria-label="" aria-describedby="">  -->
+                    <select class="form-select" id="dateSelect"></select>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3" >
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">發起人</span>
+                    <input type="text" id="empNameValue" list="empNameList" class="form-control" placeholder="" aria-label="" aria-describedby=""> 
+                    <datalist id="empNameList"></datalist>
+                
+                </div>
+            </div>    
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">發起單位</span>
+                    <input type="text" id="empDeptField" class="form-control" placeholder="" aria-label="" aria-describedby="" readonly > 
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3">
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">項目名稱</span>
+                    <!-- <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="">  -->
+                    <select class="form-select" id="workItemSelect"></select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" id="">專案名稱</span>
+                    <!-- <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="">  -->
+                    <select class="form-select" id="projectNameSelect"></select>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3" >
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text" >工作事項描述</span>
+                    <textarea class="workDescription form-control" id="workDescription" aria-label="With textarea"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3" >
+            <div class="col" >
+                <div class="input-group">
+                    <span class="input-group-text" id="">開發類工時(分)</span>
+                    <input type="text" id="devMinute" class="form-control" placeholder="" aria-label="" aria-describedby=""> 
+                </div>
+            </div>
+            <div class="col" >
+                <div class="input-group">
+                    <span class="input-group-text" id="">服務類工時(分)</span>
+                    <input type="text" id="serverMinute" class="form-control" placeholder="" aria-label="" aria-describedby=""> 
+                </div>
+            </div>
+            <div class="col" >
+                <div class="input-group">
+                    <span class="input-group-text" id="">系統類工時(分)</span>
+                    <input type="text" id="systemMinute" class="form-control" placeholder="" aria-label="" aria-describedby=""> 
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3" >
+            <div class="col insertBTN" >
+                <button type="button" id="insertBtn" class="btn btn-primary ">輸入</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="countContainer" class="container">
+        <div class="row gx-2 mt-3 mb-3">
+            <div id="mondayDate" class="countCol col-auto"></div>
+            <div id="tuesdayDate" class="countCol col-auto"></div>
+            <div id="wednesdayDate" class="countCol col-auto"></div>
+            <div id="thursdayDate" class="countCol col-auto"></div>
+            <div id="fridayDate" class="countCol col-auto"></div>
+        </div>
+    </div>
+
+
+
+    <div id="tableContainer" class="container table-responsive">
+        <div class="row gx-2 mt-3 mb-3">
+            <div class="col-auto">
+                <button id="downloadExcel" class="btn btn-info" >下載excel</button>
+            </div>
+            <div class="col-auto">
+                <button id="sendMail" class="btn btn-info">發送mail</button>
+            </div>
+            <div class="col-auto">
+                <button id="deleteAll" class="btn btn-info">全部刪除</button>
+            </div>
+        </div>
+        <table class="table table-bordered table-striped ">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col" class="otherField">年度</th>
+                    <th scope="col" class="otherField">第幾週</th>
+                    <th scope="col" class="otherField">月份</th>
+                    <th scope="col" class="otherField">日期</th>
+                    <th scope="col" class="otherField">發起人</th>
+                    <th scope="col" class="otherField">發起單位</th>
+                    <th scope="col" class="otherField">項目名稱</th>
+                    <th scope="col" class="describeField">工作事項描述</th>
+                    <th scope="col" class="otherField">開發類工時(分)</th>
+                    <th scope="col" class="otherField">服務類工時(分)</th>
+                    <th scope="col" class="otherField">系統類工時(分)</th>
+                    <th scope="col" class="buttonField">修改</th>
+                    <th scope="col" class="buttonField">刪除</th>
+                </tr>
+            </thead>
+            <tbody id="workItemRow" class="table-striped"></tbody>
+        </table>
+    </div>
+
+    <!--新增員工視窗-->
+    <div class="modal fade" id="createNewEmployeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">新增員工</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" >員工名稱</span>
+                    <input type="text" id="empName" class="form-control" >
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" >員工編號</span>
+                    <input type="text" id="empId" class="form-control" >
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" >員工部門</span>
+                    <input type="text" id="empDept" class="form-control" >
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button id="saveNewEmployeeBtn" data-type="createEmployee"  type="button" class="btn btn-primary modalSaveBtn">儲存</button>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--新增專案名稱視窗-->
+    <div class="modal fade" id="createNewProjectNameModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">新增專案名稱</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                 <div class="input-group mb-3">
+                    <span class="input-group-text" >專案名稱</span>
+                    <input type="text" id="projectName" class="form-control" >
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button id="saveNewProjectNameBtn" data-type="createProjectName" type="button" class="btn btn-primary modalSaveBtn">儲存</button>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+<script src="main.js" ></script>
+</body>
+</html>

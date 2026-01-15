@@ -1,0 +1,62 @@
+
+body{
+    background-color: #1d2a35;
+    color: #e0e0e0;
+
+}
+#formContainer{
+    margin-top: 10px;
+    max-width: 60%;
+    background-color: #808080;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    
+}
+#tableContainer{
+    margin-top: 1rem;
+
+
+}
+.insertBTN{
+    display: flex;
+    justify-content: flex-end;
+
+}
+.workDescription{
+    height:120px;
+
+}
+
+.describeField{
+    min-width: 600px;
+}
+.otherField{
+    min-width: 150px;
+}
+.buttonField{
+    min-width: 80px;
+}
+#tableContainer{
+    margin-bottom: 5%;
+}
+
+ #countContainer{
+  display: flex;
+  justify-content: center;
+
+} 
+
+
+.countCol{
+    width: 200px;
+    margin: 1rem;
+    background-color: #808080;
+    padding: 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+.countCol p {
+    font-size: 18px;
+}
