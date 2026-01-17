@@ -47,21 +47,12 @@ console.log(getWeekNumber(date));
 
 
 function getWeekdays(date) {
-  // 1. 保護原本的 date，不修改外部變數
   const d = new Date(date);
-
-  // 2. 取得星期（0=日, 1=一, ..., 6=六）
   const day = d.getDay();
-
-  // 3. 算出距離星期一要加減幾天
-  // 若 day=0（星期日）需要特別處理
   const diffToMonday = day === 0 ? -6 : 1 - day;
 
-  // 4. 設定為星期一
   const monday = new Date(d);
   monday.setDate(d.getDate() + diffToMonday);
-
-  // 5. 從星期一往後五天
   const result = [];
   for (let i = 0; i < 5; i++) {
     const temp = new Date(monday);
@@ -97,27 +88,46 @@ function getYearWeekMonth(dateStr){
   };
 }
 
-
-
+//const API_BASE_URL = 'http://localhost:8080';
 const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev";
 
-//串接後端api
-async function getEmpName(){
+
+//fetch api example
+/*
+async function getData() {
+  const url = "https://example.org/products.json";
   try {
-    const url = await fetch(`${API_BASE_URL}/workdiary/employees/all`);
-    const data = await url.json();
-    return data.map(emp => emp.empName);
-  } catch (err) {
-    console.error('錯誤:', err);
-    return [];
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error(error.message);
   }
 }
+*/
+
+
+
 //調用員工名稱api
-
-
 async function loadEmpName() {
+  const url = `${API_BASE_URL}/workdiary/employees/all`;
+  //回傳response物件
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  console.log(url);
+  //response物件轉json格式
+  const empNameJsonData = await response.json();
+  console.log(empNameJsonData);
   const empNameList = document.getElementById('empNameList');
-  const empNames = await getEmpName();
+  const empNames = empNameJsonData.map(data => data.empName);
 
   empNames.forEach(empName => {
     const option = document.createElement('option');
@@ -128,19 +138,24 @@ async function loadEmpName() {
 }
 loadEmpName();
 
-
+//抓取員工部門
 async function getEmpDept(empName) {
-  const url = new URL(`${API_BASE_URL}/workdiary/employees/dept`);
-  url.searchParams.append('EmpName', empName);
-
-  const res = await fetch(url);
-  const data = await res.json();
-  return data;
+  //寫入RequestParame參數
+  const params = new URLSearchParams({
+    EmpName: empName
+  });
+  const url = `${API_BASE_URL}/workdiary/employees/dept?${params.toString()}`;
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  const empDeptJsonData = await response.json();
+  return empDeptJsonData;
 }
-
 // 監聽輸入框，使用者輸入完成（失去焦點或按 Enter）就抓資料
 const empNameInput = document.getElementById('empNameValue');
-
 empNameInput.addEventListener('change', async () => {
   const empName = empNameInput.value.trim();
   if (!empName) return; // 如果沒有輸入就不處理
@@ -154,21 +169,18 @@ empNameInput.addEventListener('change', async () => {
 
 
 
-async function getWorkItem(){
-  try{
-    const url = new URL(`${API_BASE_URL}/workdiary/workitem/all`);
-    const res = await fetch(url);
-    const data = await res.json();
-    console.log(data.map(data => data.workItem));
-    return data.map(data => data.workItem);
-  }catch(err){
-    console.log(err);
-    return '';
-  }
-}
 async function loadWorkItem(){
+  const url = `${API_BASE_URL}/workdiary/workitem/all`;
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  const workItemJsonData = await response.json();
+  console.log(workItemJsonData.map(data => data.workItem));
   const workItemSelect = document.getElementById('workItemSelect');
-  const workitems = await getWorkItem();
+  const workitems = workItemJsonData.map(data => data.workItem);
   workitems.forEach(workitem => {
     const option = document.createElement('option');
     option.value = workitem;
@@ -178,21 +190,18 @@ async function loadWorkItem(){
 }
 loadWorkItem();
 
-async function getProjectName(){
-  try{
-    const url = new URL(`${API_BASE_URL}/workdiary/projectname/all`)
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.map(data => data.projectName);
-  }catch(err){
-    console.log(err);
-    return '';
-  }
 
-}
 async function loadProjectName(){
+  const url = `${API_BASE_URL}/workdiary/projectname/all`;
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  const projectNameJsonData = await response.json();
   const projectNameSelect = document.getElementById('projectNameSelect');
-  const projectNames = await getProjectName();
+  const projectNames = projectNameJsonData.map(data => data.projectName);
   projectNames.forEach(projectName => {
     const option = document.createElement('option');
     option.value = projectName;
@@ -252,10 +261,6 @@ function WorkItemModel(){
 
 const insertBtn = document.getElementById('insertBtn');
 insertBtn.addEventListener('click', async () => {
-   
-
-  
-
   const { fields, list: workItems } = WorkItemModel();
 
   // ===== 欄位檢查 =====
@@ -282,42 +287,37 @@ insertBtn.addEventListener('click', async () => {
   };
 
   try {
-    let res;
+    let url;
+    let response;
     const editId = insertBtn.dataset.editId; 
-
     if(editId){
-        res = await fetch(`${API_BASE_URL}/workdiary/update/${editId}`, {
+        url = `${API_BASE_URL}/workdiary/update/${editId}`
+        response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
         },
         body: JSON.stringify(workItemJson)
       });
-
     }else{
-      res = await fetch(`${API_BASE_URL}/workdiary/save`, {
+      url = `${API_BASE_URL}/workdiary/save`;
+      response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
         },
         body: JSON.stringify(workItemJson)
       });
-
-
     }
-
-    
-    if (!res.ok) {
+    if (!response.ok) {
       throw new Error('新增失敗');
     }
-
-  
     await getWorkItems();
     insertBtn.dataset.editId = '';
-
-
     // ===== 清空表單 =====
     document.getElementById('empNameValue').value = '';
     document.getElementById('empDeptField').value = '';
@@ -325,36 +325,33 @@ insertBtn.addEventListener('click', async () => {
     document.getElementById('devMinute').value = '';
     document.getElementById('serverMinute').value = '';
     document.getElementById('devMinute').value = '';
-
-
   } catch (err) {
     console.error(err);
     alert('新增資料失敗，請稍後再試');
   }
 });
 
-function  getWorkItems(){
-
-  const url = new URL(`${API_BASE_URL}/workdiary/all`);
-
-  fetch(url, { method: "GET" })
-    .then(response => response.json())
-    .then(json => {
-        console.log(json);
-        workDiariesActions(json);
-        const sumByDate = sumWeekMinutes(json);
-        renderWeekSum(sumByDate);
-      })
-    .catch(err => console.error("Fetch error:", err));
+async function  getWorkItems(){
+  const url = `${API_BASE_URL}/workdiary/all`;
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  const workItemJsonData = await response.json();
+  console.log(workItemJsonData);
+  workDiariesActions(workItemJsonData);
+  const sumByDate = sumWeekMinutes(workItemJsonData);
+  renderWeekSum(sumByDate);
 }
 
-function workDiariesActions(json){
+function workDiariesActions(workItenjson){
   const tbody = document.getElementById('workItemRow');
   tbody.innerHTML = ""; // 先清空
-
-    json.forEach(item => {
-      let id = item.id;
-      console.log(id);
+    workItenjson.forEach(item => {
+      let deleteID = item.id;
+      console.log(deleteID);
       const tr = document.createElement('tr');
 
       // 依照顯示欄位順序，加欄位
@@ -418,7 +415,6 @@ function workDiariesActions(json){
         
       })
 
-
       editBtn.textContent = '修改';
       editBtn.className = 'btn btn-sm btn-warning';
 
@@ -429,18 +425,19 @@ function workDiariesActions(json){
       const deleteTd = document.createElement('td');
       const deleteBtn = document.createElement('button');
       
-      deleteBtn.addEventListener('click',()=>{
+      deleteBtn.addEventListener('click',async ()=>{
         alert('確定要刪除嗎?');
-        fetch(`${API_BASE_URL}/workdiary/delete/`+id,{
+
+        const url = `${API_BASE_URL}/workdiary/delete/`+deleteID;
+        const response = await fetch(url,{
           method:'DELETE',
-        })
-        .then(res => res.text()) 
-        .then(res => console.log(res))  
-        .then(() => {
-          getWorkItems();
-
-        })
-
+          headers:{
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        const message = await response.text();
+        alert(message);
+        getWorkItems();
       })
         
       deleteBtn.textContent = '刪除';
@@ -452,9 +449,9 @@ function workDiariesActions(json){
       tbody.appendChild(tr);
   });
 }
-
-
 getWorkItems();
+
+
 const saveNewEmployeeBtn = document.getElementById('saveNewEmployeeBtn');
 const saveNewProjectNameBtn = document.getElementById('saveNewProjectNameBtn');
 const modalSaveBtn = document.querySelector('.modalSaveBtn');
@@ -492,13 +489,17 @@ async function saveEmployee() {
     throw new Error('請填寫所有員工欄位');
   }
 
-  const res = await fetch(`${API_BASE_URL}/workdiary/employees/create`, {
+  const url = `${API_BASE_URL}/workdiary/employees/create`;
+  const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true' 
+    },
     body: JSON.stringify({ empName, empId, empDept })
   });
 
-  if (!res.ok) {
+  if (!response.ok) {
     throw new Error('新增員工失敗');
   }
 }
@@ -510,14 +511,17 @@ async function saveProject() {
   if (!projectName) {
     throw new Error('請輸入專案名稱');
   }
+  const url = `${API_BASE_URL}/workdiary/projectname/create`;
 
-  const res = await fetch(`${API_BASE_URL}/workdiary/projectname/create`, {
+  const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
     body: JSON.stringify({ projectName })
   });
-
-  if (!res.ok) {
+  if (!response.ok) {
     throw new Error('新增專案失敗');
   }
 }
@@ -529,25 +533,38 @@ function closeModal(modalId) {
 }
 
 document.getElementById('downloadExcel').addEventListener('click',async()=>{
-  const res = await fetch(`${API_BASE_URL}/workdiary/download`,{
-    method:'GET'
+  
+  const url = `${API_BASE_URL}/workdiary/download`;
+  
+  const res = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
   const blob = await res.blob();
-  const url = window.URL.createObjectURL(blob);
+  const dowmloadURL = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = 'WorkDiary.xlsx';
   a.click();
 
-  window.URL.revokeObjectURL(url);
+  window.URL.revokeObjectURL(dowmloadURL);
 });
 
 document.getElementById('sendMail').addEventListener('click',async()=>{
   try{
-    const res = await fetch(`${API_BASE_URL}/workdiary/sendmail`,{
-      method:'GET'
+
+    const url = `${API_BASE_URL}/workdiary/sendmail`;
+
+    const response = await fetch(url,{
+      method:'GET',
+      headers:{
+        'ngrok-skip-browser-warning': 'true'
+      }
+
     })
-    if(!res.ok){
+    if(!response.ok){
       throw new Error('郵件發失敗');
     }
     const message = await res.text();
@@ -561,10 +578,12 @@ document.getElementById('sendMail').addEventListener('click',async()=>{
 
 document.getElementById('deleteAll').addEventListener('click',async()=>{
   try{
-    const res = await fetch(`${API_BASE_URL}/workdiary/delete`,{
-      method:'DELETE'
+    const url = `${API_BASE_URL}/workdiary/delete`;
+    const response = await fetch(url,{
+      method:'DELETE',
+      'ngrok-skip-browser-warning': 'true'
     });
-    const message = await res.text();
+    const message = await response.text();
     alert(message);
     await getWorkItems();
 
