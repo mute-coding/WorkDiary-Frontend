@@ -138,6 +138,28 @@ async function loadEmpName() {
 }
 loadEmpName();
 
+async function getAllDept(){
+  const url = `${API_BASE_URL}/workdiary/employees/allDept`;
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+  console.log(response);
+  const allDeptJsonData = await response.json();
+  console.log(allDeptJsonData);
+  const empDeptSelecter = document.getElementById('empDeptSelecter');
+  allDeptJsonData.forEach(empDept => {
+    const option = document.createElement('option');
+    option.value = empDept;
+    option.textContent = empDept;
+    empDeptSelecter.appendChild(option);
+  });
+
+}
+getAllDept();
+
 //抓取員工部門
 async function getEmpDept(empName) {
   //寫入RequestParame參數
@@ -482,7 +504,8 @@ document.querySelectorAll('.modalSaveBtn').forEach(btn=>{
 async function saveEmployee() {
   const empName = document.getElementById('empName').value.trim();
   const empId = document.getElementById('empId').value.trim();
-  const empDept = document.getElementById('empDept').value.trim();
+  const empDept = document.getElementById('empDeptSelecter').value.trim();
+
 
   // 表單驗證
   if (!empName || !empId || !empDept) {
