@@ -656,7 +656,7 @@ document.getElementById('sendMail').addEventListener('click',async()=>{
     if(!response.ok){
       throw new Error('郵件發失敗');
     }
-    const message = await res.text();
+    const message = await response.text();
     alert(message);
 
   } catch (err) {
