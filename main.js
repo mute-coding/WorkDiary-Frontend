@@ -88,8 +88,8 @@ function getYearWeekMonth(dateStr){
   };
 }
 
-//const API_BASE_URL = 'http://localhost:8080';
-const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev";
+const API_BASE_URL = 'http://localhost:8080';
+//const API_BASE_URL = "https://phylis-nonpresentational-gussie.ngrok-free.dev";
 
 
 //fetch api example
@@ -111,6 +111,22 @@ async function getData() {
 */
 
 
+//table無資料預設顯示
+function showTableMessage(message){
+  const tbody = document.getElementById('workItemRow');
+    tbody.innerHTML = '';
+
+  const tr = document.createElement('tr');
+  const td = document.createElement('td');
+  td.colSpan = 13; 
+  td.textContent = message;
+  td.style.textAlign = 'center';
+  td.style.color = '#888';
+
+  tr.appendChild(td);
+  tbody.appendChild(tr);
+}
+
 
 //調用員工名稱api
 async function loadEmpName() {
@@ -123,6 +139,9 @@ async function loadEmpName() {
     }
   });
   console.log(url);
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
   //response物件轉json格式
   const empNameJsonData = await response.json();
   console.log(empNameJsonData);
@@ -146,7 +165,11 @@ async function getAllDept(){
       'ngrok-skip-browser-warning': 'true'
     }
   });
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
   console.log(response);
+
   const allDeptJsonData = await response.json();
   console.log(allDeptJsonData);
   const empDeptSelecter = document.getElementById('empDeptSelecter');
@@ -173,6 +196,9 @@ async function getEmpDept(empName) {
       'ngrok-skip-browser-warning': 'true'
     }
   });
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
   const empDeptJsonData = await response.json();
   return empDeptJsonData;
 }
@@ -199,6 +225,9 @@ async function loadWorkItem(){
       'ngrok-skip-browser-warning': 'true'
     }
   });
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
   const workItemJsonData = await response.json();
   console.log(workItemJsonData.map(data => data.workItem));
   const workItemSelect = document.getElementById('workItemSelect');
@@ -221,6 +250,9 @@ async function loadProjectName(){
       'ngrok-skip-browser-warning': 'true'
     }
   });
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
   const projectNameJsonData = await response.json();
   const projectNameSelect = document.getElementById('projectNameSelect');
   const projectNames = projectNameJsonData.map(data => data.projectName);
@@ -323,6 +355,10 @@ insertBtn.addEventListener('click', async () => {
         },
         body: JSON.stringify(workItemJson)
       });
+    if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+    }
+
     }else{
       url = `${API_BASE_URL}/workdiary/save`;
       response = await fetch(url, {
@@ -355,17 +391,31 @@ insertBtn.addEventListener('click', async () => {
 
 async function  getWorkItems(){
   const url = `${API_BASE_URL}/workdiary/all`;
-  const response = await fetch(url,{
-    method:'GET',
-    headers:{
-      'ngrok-skip-browser-warning': 'true'
+  try{
+    const response = await fetch(url,{
+      method:'GET',
+      headers:{
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+    if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
     }
-  });
-  const workItemJsonData = await response.json();
-  console.log(workItemJsonData);
-  workDiariesActions(workItemJsonData);
-  const sumByDate = sumWeekMinutes(workItemJsonData);
-  renderWeekSum(sumByDate);
+    const workItemJsonData = await response.json();
+    console.log(workItemJsonData);
+    if (!workItemJsonData || workItemJsonData.length === 0) {
+      showTableMessage('無資料');
+      renderWeekSum({});
+      return;
+    }
+    workDiariesActions(workItemJsonData);
+    const sumByDate = sumWeekMinutes(workItemJsonData);
+    renderWeekSum(sumByDate);
+  }catch(error) {
+    console.error(error);
+    showTableMessage('無資料或 Server 未開啟');
+    renderWeekSum({});
+  }
 }
 
 function workDiariesActions(workItenjson){
@@ -375,7 +425,6 @@ function workDiariesActions(workItenjson){
       let deleteID = item.id;
       console.log(deleteID);
       const tr = document.createElement('tr');
-
       // 依照顯示欄位順序，加欄位
       const values = [
         item.year,
@@ -457,6 +506,9 @@ function workDiariesActions(workItenjson){
             'ngrok-skip-browser-warning': 'true'
           }
         });
+        if (!response.ok) {
+          throw new Error("server未開啟或發生異常");
+        }
         const message = await response.text();
         alert(message);
         getWorkItems();
@@ -464,10 +516,8 @@ function workDiariesActions(workItenjson){
         
       deleteBtn.textContent = '刪除';
       deleteBtn.className = 'btn btn-sm btn-danger';
-
       deleteTd.appendChild(deleteBtn);
       tr.appendChild(deleteTd);
-      
       tbody.appendChild(tr);
   });
 }
@@ -501,6 +551,9 @@ document.querySelectorAll('.modalSaveBtn').forEach(btn=>{
 });
 
 
+
+
+
 async function saveEmployee() {
   const empName = document.getElementById('empName').value.trim();
   const empId = document.getElementById('empId').value.trim();
@@ -521,6 +574,13 @@ async function saveEmployee() {
     },
     body: JSON.stringify({ empName, empId, empDept })
   });
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
+  document.getElementById('empName').value = "";
+  document.getElementById('empId').value = "";
+  document.getElementById('empDeptSelecter').value = "";
+  alert("新增員工成功");
 
   if (!response.ok) {
     throw new Error('新增員工失敗');
@@ -544,6 +604,9 @@ async function saveProject() {
     },
     body: JSON.stringify({ projectName })
   });
+
+  document.getElementById('projectName').value = "";
+
   if (!response.ok) {
     throw new Error('新增專案失敗');
   }
@@ -559,13 +622,16 @@ document.getElementById('downloadExcel').addEventListener('click',async()=>{
   
   const url = `${API_BASE_URL}/workdiary/download`;
   
-  const res = await fetch(url,{
+  const response = await fetch(url,{
     method:'GET',
     headers:{
       'ngrok-skip-browser-warning': 'true'
     }
   });
-  const blob = await res.blob();
+  if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+  }
+  const blob = await response.blob();
   const dowmloadURL = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -606,6 +672,9 @@ document.getElementById('deleteAll').addEventListener('click',async()=>{
       method:'DELETE',
       'ngrok-skip-browser-warning': 'true'
     });
+    if (!response.ok) {
+      throw new Error("server未開啟或發生異常");
+    }
     const message = await response.text();
     alert(message);
     await getWorkItems();
@@ -635,7 +704,7 @@ function sumWeekMinutes(workitems){
     result[date] += total;
   });
 
-  console.log('加總結果:', result); // ⭐ 建議保留
+  console.log('加總結果:', result); 
   return result;
 }
 
@@ -654,9 +723,7 @@ function renderWeekSum(sumByDate) {
   weekDates.forEach((dateStr, index) => {
     const container = document.getElementById(thisDateMap[index]);
     if (!container) return;
-
     const totalMinute = sumByDate[dateStr] || 0;
-
     // 清空舊資料（避免重複顯示）
     container.innerHTML = `
       <p>${dateStr}</p>
