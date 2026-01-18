@@ -1,5 +1,5 @@
 # 工作日誌應用程式 前端程式碼
-[工作日誌應用程式 後端程式碼]([https://www.google.com](https://github.com/mute-coding/WorkDiary-Backend))
+[工作日誌應用程式 後端程式碼](https://github.com/mute-coding/WorkDiary-Backend)
 ## 使用工具
 - html
 - css
