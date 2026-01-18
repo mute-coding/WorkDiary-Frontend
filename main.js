@@ -68,7 +68,7 @@ function getWeekdays(date) {
 //日期格式
 function dateFormat(date) {
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // 記得 JS 的月份是 0-11，要 +1
+    const month = date.getMonth() + 1; // JS 的月份是 0-11，要 +1
     const day = date.getDate();
     return `${year}/${month}/${day}`;
 }
