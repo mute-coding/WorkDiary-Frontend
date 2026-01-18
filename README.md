@@ -11,3 +11,4 @@
 
 ## 網頁UI
 -輸入資料區域
+![輸入資料區域]([https://i.imgur.com/xxxx.png](https://github.com/mute-coding/WorkDiary-Frontend/blob/6c2d08627d974b90b764cb5a0bc241ddaa1d6d31/%E7%B6%B2%E9%A0%81UI01.jpg))
